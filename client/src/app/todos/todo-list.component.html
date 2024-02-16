@@ -96,7 +96,7 @@
         </div>
       </div>
 
-      <div class="overlay" *ngIf= "popupOpen">
+      <div class="overlay"  *ngIf= "popupOpen">
         <div class="popup">
           <a class="close" (click)= "popupOpen = false" (keyup)= "popupOpen = false" tabindex=0>&times;</a>
           <div class="content">
@@ -128,3 +128,7 @@
     <!-- Maybe this should be a pop-up instead of just a text message? Not sure. -->
 
   </div>
+
+  <button mat-fab class="add-todo-fab" matTooltip="Add Todo" matTooltipPosition="left" routerLink="/todos/new" data-test="addTodoButton">
+    <mat-icon class="md-24" aria-label="Add Todo">add</mat-icon>
+  </button>
