@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
-import { Todo, TodoRole } from './todo';
+import { Todo } from './todo';
 import { TodoService } from './todo.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
+import { CommonModule } from '@angular/common';
 
 import { MatRadioModule } from '@angular/material/radio';
 import { MatOptionModule } from '@angular/material/core';
@@ -21,11 +22,18 @@ import { MatCardModule } from '@angular/material/card';
  * A component that displays a list of todos, either as a grid
  * of cards or as a vertical list.
  *
- * The component supports local filtering by name and/or company,
+ * The component supports local filtering by owner and/or company,
  * and remote filtering (i.e., filtering by the server) by
  * role and/or age. These choices are fairly arbitrary here,
  * but in "real" projects you want to think about where it
  * makes the most sense to do the filtering.
+ *  _id: string;
+    owner: string;
+    status: boolean;
+    body: string;
+    category: string;
+    avatar?: string;
+    role: TodoRole;
  */
 @Component({
     selector: 'app-todo-list-component',
@@ -33,28 +41,38 @@ import { MatCardModule } from '@angular/material/card';
     styleUrls: ['./todo-list.component.scss'],
     providers: [],
     standalone: true,
-    imports: [MatCardModule, MatFormFieldModule, MatInputModule, FormsModule, MatSelectModule, MatOptionModule, MatRadioModule, MatListModule, RouterLink, MatButtonModule, MatTooltipModule, MatIconModule]
+    imports: [MatCardModule, MatFormFieldModule, MatInputModule, FormsModule, MatSelectModule, MatOptionModule, MatRadioModule, MatListModule, RouterLink, MatButtonModule, MatTooltipModule, MatIconModule, CommonModule]
 })
-
-export class TodoListComponent implements OnInit, OnDestroy  {
+export class TodoListComponent implements OnInit, OnDestroy {
   // These are public so that tests can reference them (.spec.ts)
   public serverFilteredTodos: Todo[];
   public filteredTodos: Todo[];
+  public todoOwner: string;
+  public todoStatus: boolean;
+  public todoBody: string;
+  public todoCategory: string;
+  public todoLimit: number;
+  public todoOrder: string;
 
-  public todoName: string;
-  public todoAge: number;
-  public todoRole: TodoRole;
-  public todoCompany: string;
-  public viewType: 'card' | 'list' = 'card';
+  public viewType: 'list';
 
   errMsg = '';
   private ngUnsubscribe = new Subject<void>();
+  popup = false;
+  curr_id = -1
 
+  popupOpen: boolean = false;
+  selectedTodo: Todo | null = null;
+
+
+  openPopup(todo: Todo) {
+    this.selectedTodo = todo;
+    this.popupOpen = true;
+  }
 
   /**
    * This constructor injects both an instance of `TodoService`
    * and an instance of `MatSnackBar` into this component.
-   * `TodoService` lets us interact with the server.
    *
    * @param todoService the `TodoService` used to get todos from the server
    * @param snackBar the `MatSnackBar` used to display feedback
@@ -73,8 +91,12 @@ export class TodoListComponent implements OnInit, OnDestroy  {
     // (for more on Observable, see: https://reactivex.io/documentation/observable.html)
     // and we are specifically watching for role and age whenever the Todo[] gets updated
     this.todoService.getTodos({
-      role: this.todoRole,
-      age: this.todoAge
+      owner: this.todoOwner,
+      category: this.todoCategory,
+      body: this.todoBody,
+      status: this.todoStatus,
+      limit: this.todoLimit,
+      order: this.todoOrder
     }).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe({
@@ -108,14 +130,14 @@ export class TodoListComponent implements OnInit, OnDestroy  {
    * Called when the filtering information is changed in the GUI so we can
    * get an updated list of `filteredTodos`.
    */
-  public updateFilter(): void {
+  public updateFilter() {
     this.filteredTodos = this.todoService.filterTodos(
-      this.serverFilteredTodos, { name: this.todoName, company: this.todoCompany });
+      this.serverFilteredTodos, { owner: this.todoOwner, status: this.todoStatus, body: this.todoBody, category: this.todoCategory, limit: this.todoLimit, order: this.todoOrder}
+    );
   }
 
   /**
    * Starts an asynchronous operation to update the todos list
-   *
    */
   ngOnInit(): void {
     this.getTodosFromServer();
@@ -129,5 +151,4 @@ export class TodoListComponent implements OnInit, OnDestroy  {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

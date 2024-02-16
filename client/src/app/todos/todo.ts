@@ -1,12 +1,9 @@
 export interface Todo {
-    _id: string;
-    name: string;
-    age: number;
-    company: string;
-    email: string;
-    avatar?: string;
-    role: TodoRole;
-  }
-  
-  export type TodoRole = 'admin' | 'editor' | 'viewer';
-  
+  _id: string;
+  owner: string;
+  status: boolean;
+  body: string;
+  category: string;
+  limit?: number;
+}
+export type TodoCategory = 'groceries' | 'homework' | 'software design' | 'video games';
