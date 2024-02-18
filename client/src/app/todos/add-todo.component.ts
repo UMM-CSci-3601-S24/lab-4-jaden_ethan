@@ -28,6 +28,12 @@ export class AddTodoComponent {
       Validators.required,
     ])),
     // We allow alphanumeric input and limit the length for name.
+
+    status: new FormControl<boolean>(false, Validators.compose([
+      Validators.required,
+      Validators.pattern('^(true|false)$'),
+    ])),
+
     body: new FormControl('', Validators.compose([
       Validators.required,
       Validators.minLength(2),
@@ -46,10 +52,7 @@ export class AddTodoComponent {
     ])),
 
     // Since this is for a company, we need workers to be old enough to work, and probably not older than 200.
-    status: new FormControl<boolean>(false, Validators.compose([
-      Validators.required,
-      Validators.pattern('^(complete|incomplete)$'),
-    ])),
+    
 
     // We don't care much about what is in the company field, so we just add it here as part of the form
     // without any particular validation.
