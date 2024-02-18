@@ -285,7 +285,7 @@ describe('AddTodoComponent#submitForm()', () => {
             { path: 'todos/1', component: TodoProfileComponent }
         ]),
         HttpClientTestingModule,
-        AddTodoComponent, TodoProfileComponent
+        AddTodoComponent
     ],
 }).compileComponents().catch(error => {
       expect(error).toBeNull();

@@ -8,31 +8,37 @@
         <mat-card-content>
           <div class="flex-col">
             <mat-form-field>
-              <mat-label>Name</mat-label>
-              <input matInput formControlName="name"
+              <mat-label>Owner</mat-label>
+              <input matInput formControlName="owner"
                 required>
-              @if (formControlHasError('name')) {
-                <mat-error data-test="nameError">
-                  {{getErrorMessage('name')}}
+              @if (formControlHasError('owner')) {
+                <mat-error data-test="ownerError">
+                  {{getErrorMessage('owner')}}
                 </mat-error>
               }
             </mat-form-field>
 
             <mat-form-field>
-              <mat-label>Age</mat-label>
-              <input matInput type="number"
-                formControlName="age" required>
-              @if (formControlHasError('age')) {
-                <mat-error data-test="ageError">
-                  {{getErrorMessage('age')}}
+              <mat-label>Category</mat-label>
+              <input matInput formControlName="category"
+                required>
+              @if (formControlHasError('category')) {
+                <mat-error data-test="categoryError">
+                  {{getErrorMessage('category')}}
                 </mat-error>
               }
             </mat-form-field>
 
             <mat-form-field>
-              <mat-label>Company</mat-label>
-              <input matInput formControlName="company">
-              <mat-hint>Not required in Angular for demonstration, still required by server</mat-hint>
+              <mat-label>Status</mat-label>
+              <mat-option value="true">Complete</mat-option>
+              <mat-option value="false">Incomplete</mat-option>
+                required>
+              @if (formControlHasError('owner')) {
+                <mat-error data-test="ownerError">
+                  {{getErrorMessage('owner')}}
+                </mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field>

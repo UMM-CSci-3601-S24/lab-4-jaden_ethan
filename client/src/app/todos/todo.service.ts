@@ -152,4 +152,9 @@ export class TodoService {
 
     return filteredTodos;
   }
+
+  addTodo(newTodo: Partial<Todo>): Observable<string> {
+    // Send post request to add a new user with the user data as the body.
+    return this.httpClient.post<{id: string}>(this.todoUrl, newTodo).pipe(map(res => res.id));
+  }
 }
