@@ -91,7 +91,7 @@ export class TodoService {
    * @returns an `Observable` containing the resulting todo.
    */
   getTodoById(id: string): Observable<Todo> {
-    return this.httpClient.get<Todo>(this.todoUrl + '/' + id);
+    return this.httpClient.get<Todo>(`${this.todoUrl}/${id}`);
   }
 
   /**

@@ -22,6 +22,11 @@ import { MatCardModule } from '@angular/material/card';
 export class AddTodoComponent {
 
   addTodoForm = new FormGroup({
+
+
+    owner: new FormControl('', Validators.compose([
+      Validators.required,
+    ])),
     // We allow alphanumeric input and limit the length for name.
     body: new FormControl('', Validators.compose([
       Validators.required,
@@ -41,7 +46,7 @@ export class AddTodoComponent {
     ])),
 
     // Since this is for a company, we need workers to be old enough to work, and probably not older than 200.
-    status: new FormControl<string>('', Validators.compose([
+    status: new FormControl<boolean>(false, Validators.compose([
       Validators.required,
       Validators.pattern('^(complete|incomplete)$'),
     ])),
@@ -49,11 +54,6 @@ export class AddTodoComponent {
     // We don't care much about what is in the company field, so we just add it here as part of the form
     // without any particular validation.
     // company: new FormControl(''),
-
-  
-    owner: new FormControl('', Validators.compose([
-      Validators.required,
-    ])),
 
     category: new FormControl<TodoCategory>('groceries', Validators.compose([
       Validators.required,

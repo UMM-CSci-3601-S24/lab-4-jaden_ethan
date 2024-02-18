@@ -20,8 +20,12 @@
 
             <mat-form-field>
               <mat-label>Category</mat-label>
-              <input matInput formControlName="category"
-                required>
+              <mat-select required formControlName="category">
+                <mat-option value="groceries">Groceries</mat-option>
+                <mat-option value="homework">Homework</mat-option>
+                <mat-option value="software design">Software Design</mat-option>
+                <mat-option value="video games">Video Games</mat-option>
+              </mat-select>
               @if (formControlHasError('category')) {
                 <mat-error data-test="categoryError">
                   {{getErrorMessage('category')}}
@@ -31,26 +35,33 @@
 
             <mat-form-field>
               <mat-label>Status</mat-label>
-              <mat-option value="true">Complete</mat-option>
-              <mat-option value="false">Incomplete</mat-option>
-                required>
-              @if (formControlHasError('owner')) {
-                <mat-error data-test="ownerError">
-                  {{getErrorMessage('owner')}}
+              <mat-select required formControlName="status">
+                <mat-option value="complete">Complete</mat-option>
+                <mat-option value="incomplete">Incomplete</mat-option>
+              </mat-select>
+              @if (formControlHasError('status')) {
+                <mat-error data-test="statusError">
+                  {{getErrorMessage('status')}}
                 </mat-error>
               }
             </mat-form-field>
 
-            <mat-form-field>
-              <mat-label>Email</mat-label>
-              <input matInput type="email"
-                formControlName="email" required>
-              @if (formControlHasError('email')) {
-                <mat-error data-test="emailError">
-                  {{getErrorMessage('email')}}
+            <mat-form-field class="body">
+              <mat-label>Body</mat-label>
+              <textarea matInput
+              required formControlName="body"
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows=""
+            cdkAutosizeMaxRows="10"></textarea>
+              @if (formControlHasError('body')) {
+                <mat-error data-test="bodyError">
+                  {{getErrorMessage('body')}}
                 </mat-error>
               }
             </mat-form-field>
+
+           
 
           </div>
 
@@ -64,7 +75,7 @@
             type="submit"
             data-test="confirmAddTodoButton"
             >
-            ADD USER
+            ADD TODO
           </button>
         </mat-card-actions>
       </mat-card>

@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { UserListComponent } from './users/user-list.component';
 import { UserProfileComponent } from './users/user-profile.component';
 import { AddUserComponent } from './users/add-user.component';
+import { AddTodoComponent } from './todos/add-todo.component';
 import { CompanyListComponent } from './company-list/company-list.component';
 import { TodoListComponent } from './todos/todo-list.component';
 
@@ -14,7 +15,7 @@ const routes: Routes = [
   {path: '', component: HomeComponent, title: 'Home'},
   {path: 'users', component: UserListComponent, title: 'Users'},
   {path: 'todos', component: TodoListComponent, title: 'Todos'},
-  {path: 'todos/new', component: AddUserComponent, title: 'Add Todo'},
+  {path: 'todos/new', component: AddTodoComponent, title: 'Add Todo'},
   {path: 'users/new', component: AddUserComponent, title: 'Add User'},
   {path: 'users/:id', component: UserProfileComponent, title: 'User Profile'},
   {path: 'companies', component: CompanyListComponent, title: 'Companies'},
