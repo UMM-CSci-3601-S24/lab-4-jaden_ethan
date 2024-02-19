@@ -94,8 +94,31 @@ overflow: auto;
 width: 100%;
 }
 
+
 .add-todo-fab {
   position: fixed;
   bottom: 15px;
   right: 30px;
+}
+
+.todo-list-item {
+  width: 100%;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.todo-details, .todo-status {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo-list-body {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width:1000px;
 }
