@@ -88,9 +88,8 @@
                 <a mat-list-item *ngFor="let todo of filteredTodos" (click)="openPopup(todo)" (keyup)="openPopup(todo)" tabindex=0 class="todo-list-item">
                   <div class="flex-container">
                     <div class="todo-details">
-                      <span matListItemLine class="todo-list-id"> ID: {{todo._id}} </span>
                       <span matListItemLine class="todo-list-owner"> Owner: {{todo.owner}} </span>
-                      <span matListItemLine class="todo-list-body"> Body: {{todo.body}} </span>
+                      <span matListItemLine class="todo-list-body"> Description: {{todo.body}} </span>
                     </div>
                     <div class="todo-status">
                       <span matListItemLine class="todo-list-status"> <span [ngStyle]="{'color': todo.status ? '#3CFF33' : '#FF0000'}">{{todo.status ? 'Complete' : 'Incomplete'}}</span> </span>
@@ -108,11 +107,11 @@
           <a class="close" (click)= "popupOpen = false" (keyup)= "popupOpen = false" tabindex=0>&times;</a>
           <div class="content">
             <h2>Task Details</h2>
-            <p>ID: {{ selectedTodo?._id }}</p>
             <p>Owner: {{ selectedTodo?.owner }}</p>
             <p>Description: {{ selectedTodo?.body }}</p>
             <p>Status: <span [ngStyle]="{'color': selectedTodo?.status ? '#3CFF33' : '#FF0000'}">{{ selectedTodo?.status ? 'Complete' : 'Incomplete' }}</span></p>
             <p>Category: {{ selectedTodo?.category }}</p>
+            <p class="ID">ID: {{ selectedTodo?._id }}</p>
           </div>
         </div>
       </div>
