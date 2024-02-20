@@ -258,9 +258,11 @@ public class TodoController implements Controller {
      * `BadRequestResponse` with an appropriate error message.
      */
     Todo newTodo = ctx.bodyValidator(Todo.class)
-    .check(tdo -> tdo.body != null && tdo.body.length() > 0, "Todo must have a non-empty user name")
-    .check(tdo -> tdo.category.matches("^(groceries|homework|software design|video games)$"), "Todo must have a legal user role")
-    .get();
+      .check(tdo -> tdo.body != null && tdo.body.length() > 0, "Todo must have a non-empty body")
+      .check(tdo -> tdo.owner != null && tdo.owner.length() > 0, "Todo must have a non-empty owner")
+      .check(tdo -> tdo.status == true || tdo.status == false, "Todo must have a non-empty status")
+      .check(tdo -> tdo.category.matches("^(groceries|homework|software design|video games)$"), "Todo must have a legal user role")
+      .get();
 
     // Insert the new todo into the database
     todoCollection.insertOne(newTodo);
