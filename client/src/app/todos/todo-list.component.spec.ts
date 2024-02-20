@@ -81,15 +81,15 @@ describe('Todo list', () => {
     expect(todoList.serverFilteredTodos.length).toBe(3);
   });
 
-  it('contains a todo ownerd \'Chris\'', () => {
+  it('contains a todo owner \'Chris\'', () => {
     expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Chris')).toBe(true);
   });
 
-  it('contain a todo ownerd \'Jamie\'', () => {
+  it('contain a todo owner \'Jamie\'', () => {
     expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Jamie')).toBe(true);
   });
 
-  it('doesn\'t contain a todo ownerd \'Santa\'', () => {
+  it('doesn\'t contain a todo owner \'Santa\'', () => {
     expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Santa')).toBe(false);
   });
 

@@ -106,17 +106,17 @@ describe('AddTodoComponent', () => {
       expect(bodyControl.valid).toBeTruthy();
     });
 
-    // it('should fail if we provide an "existing" body', () => {
-    //   // We're assuming that "abc123" and "123abc" already
-    //   // exist so we disallow them.
-    //   bodyControl.setValue('abc123');
-    //   expect(bodyControl.valid).toBeFalsy();
-    //   expect(bodyControl.hasError('existingName')).toBeTruthy();
+    it('should fail if we provide an "existing" body', () => {
+      // We're assuming that "abc123" and "123abc" already
+      // exist so we disallow them.
+      bodyControl.setValue('abc123');
+      expect(bodyControl.valid).toBeFalsy();
+      expect(bodyControl.hasError('existingName')).toBeTruthy();
 
-    //   bodyControl.setValue('123abc');
-    //   expect(bodyControl.valid).toBeFalsy();
-    //   expect(bodyControl.hasError('existingName')).toBeTruthy();
-    // });
+      bodyControl.setValue('123abc');
+      expect(bodyControl.valid).toBeFalsy();
+      expect(bodyControl.hasError('existingName')).toBeTruthy();
+    });
   });
 
   describe('The status field', () => {
@@ -129,6 +129,16 @@ describe('AddTodoComponent', () => {
     it('should not allow empty statuss', () => {
       statusControl.setValue('');
       expect(statusControl.valid).toBeFalsy();
+    });
+
+    it('should allow true status', () => {
+      statusControl.setValue('true');
+      expect(statusControl.valid).toBeTruthy();
+    });
+
+    it('should allow false status', () => {
+      statusControl.setValue('false');
+      expect(statusControl.valid).toBeTruthy();
     });
 
   //   it('should be fine with "27"', () => {
@@ -199,39 +209,44 @@ describe('AddTodoComponent', () => {
   //   });
   // });
 
-  // describe('The role field', () => {
-  //   let roleControl: AbstractControl;
+  describe('The category field', () => {
+    let categoryControl: AbstractControl;
 
-  //   beforeEach(() => {
-  //     roleControl = addTodoForm.controls.role;
-  //   });
+    beforeEach(() => {
+      categoryControl = addTodoForm.controls.category;
+    });
 
-  //   it('should not allow empty values', () => {
-  //     roleControl.setValue('');
-  //     expect(roleControl.valid).toBeFalsy();
-  //     expect(roleControl.hasError('required')).toBeTruthy();
-  //   });
+    it('should not allow empty values', () => {
+      categoryControl.setValue('');
+      expect(categoryControl.valid).toBeFalsy();
+      expect(categoryControl.hasError('required')).toBeTruthy();
+    });
 
-  //   it('should allow "admin"', () => {
-  //     roleControl.setValue('admin');
-  //     expect(roleControl.valid).toBeTruthy();
-  //   });
+    it('should allow "software design"', () => {
+      categoryControl.setValue('software design');
+      expect(categoryControl.valid).toBeTruthy();
+    });
 
-  //   it('should allow "editor"', () => {
-  //     roleControl.setValue('editor');
-  //     expect(roleControl.valid).toBeTruthy();
-  //   });
+    it('should allow "groceries"', () => {
+      categoryControl.setValue('groceries');
+      expect(categoryControl.valid).toBeTruthy();
+    });
 
-  //   it('should allow "viewer"', () => {
-  //     roleControl.setValue('viewer');
-  //     expect(roleControl.valid).toBeTruthy();
-  //   });
+    it('should allow "video games"', () => {
+      categoryControl.setValue('video games');
+      expect(categoryControl.valid).toBeTruthy();
+    });
 
-  //   it('should not allow "Supreme Overlord"', () => {
-  //     roleControl.setValue('Supreme Overlord');
-  //     expect(roleControl.valid).toBeFalsy();
-  //   });
-  // });
+    it('should allow "homework"', () => {
+      categoryControl.setValue('homework');
+      expect(categoryControl.valid).toBeTruthy();
+    });
+
+    it('should not allow "Supreme Overlord"', () => {
+      categoryControl.setValue('Supreme Overlord');
+      expect(categoryControl.valid).toBeFalsy();
+    });
+  });
 
   // describe('getErrorMessstatus()', () => {
   //   it('should return the correct error messstatus', () => {
@@ -282,7 +297,7 @@ describe('AddTodoComponent#submitForm()', () => {
         MatInputModule,
         BrowserAnimationsModule,
         RouterTestingModule.withRoutes([
-            { path: 'todos/1' }
+            { path: 'todos/1', component: AddTodoComponent }
         ]),
         HttpClientTestingModule,
         AddTodoComponent
