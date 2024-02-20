@@ -36,7 +36,6 @@ public class TodoController implements Controller {
 
   private static final String API_TODOS = "/api/todos";
   private static final String API_TODO_BY_ID = "/api/todos/{id}";
-
   static final String BODY_KEY = "body";
   static final String CATEGORY_KEY = "category";
   static final String OWNER_KEY = "owner";
@@ -385,5 +384,10 @@ public class TodoController implements Controller {
     // Add new todo with the todo info being in the JSON body
     // of the HTTP request
     server.post(API_TODOS, this::addNewTodo);
+  }
+
+  public void deleteTodo(Context ctx) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'deleteTodo'");
   }
 }
