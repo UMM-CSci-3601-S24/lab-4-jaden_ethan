@@ -65,204 +65,219 @@ describe('AddTodoComponent', () => {
     expect(addTodoForm.valid).toBeFalsy();
   });
 
-  describe('The name field', () => {
-    let nameControl: AbstractControl;
+  describe('The body field', () => {
+    let bodyControl: AbstractControl;
 
     beforeEach(() => {
-      nameControl = addTodoComponent.addTodoForm.controls.name;
+      bodyControl = addTodoComponent.addTodoForm.controls.body;
     });
 
-    it('should not allow empty names', () => {
-      nameControl.setValue('');
-      expect(nameControl.valid).toBeFalsy();
+    it('should not allow empty bodys', () => {
+      bodyControl.setValue('');
+      expect(bodyControl.valid).toBeFalsy();
     });
 
-    it('should be fine with "Chris Smith"', () => {
-      nameControl.setValue('Chris Smith');
-      expect(nameControl.valid).toBeTruthy();
+    it('should be fine with "this is a very cool and interesting task"', () => {
+      bodyControl.setValue('this is a very cool and interesting task');
+      expect(bodyControl.valid).toBeTruthy();
     });
 
-    it('should fail on single character names', () => {
-      nameControl.setValue('x');
-      expect(nameControl.valid).toBeFalsy();
+    it('should fail on single character bodys', () => {
+      bodyControl.setValue('x');
+      expect(bodyControl.valid).toBeFalsy();
       // Annoyingly, Angular uses lowercase 'l' here
       // when it's an upper case 'L' in `Validators.minLength(2)`.
-      expect(nameControl.hasError('minlength')).toBeTruthy();
+      expect(bodyControl.hasError('minlength')).toBeTruthy();
     });
 
     // In the real world, you'd want to be pretty careful about
-    // setting upper limits on things like name lengths just
-    // because there are people with really long names.
-    it('should fail on really long names', () => {
-      nameControl.setValue('x'.repeat(100));
-      expect(nameControl.valid).toBeFalsy();
+    // setting upper limits on things like body lengths just
+    // because there are people with really long bodys.
+    it('should fail on really long bodys', () => {
+      bodyControl.setValue('x'.repeat(400));
+      expect(bodyControl.valid).toBeFalsy();
       // Annoyingly, Angular uses lowercase 'l' here
       // when it's an upper case 'L' in `Validators.maxLength(2)`.
-      expect(nameControl.hasError('maxlength')).toBeTruthy();
+      expect(bodyControl.hasError('maxlength')).toBeTruthy();
     });
 
-    it('should allow digits in the name', () => {
-      nameControl.setValue('Bad2Th3B0ne');
-      expect(nameControl.valid).toBeTruthy();
+    it('should allow digits in the body', () => {
+      bodyControl.setValue('Bad2Th3B0ne');
+      expect(bodyControl.valid).toBeTruthy();
     });
 
-    it('should fail if we provide an "existing" name', () => {
+    it('should fail if we provide an "existing" body', () => {
       // We're assuming that "abc123" and "123abc" already
       // exist so we disallow them.
-      nameControl.setValue('abc123');
-      expect(nameControl.valid).toBeFalsy();
-      expect(nameControl.hasError('existingName')).toBeTruthy();
+      bodyControl.setValue('abc123');
+      expect(bodyControl.valid).toBeFalsy();
+      expect(bodyControl.hasError('existingName')).toBeTruthy();
 
-      nameControl.setValue('123abc');
-      expect(nameControl.valid).toBeFalsy();
-      expect(nameControl.hasError('existingName')).toBeTruthy();
+      bodyControl.setValue('123abc');
+      expect(bodyControl.valid).toBeFalsy();
+      expect(bodyControl.hasError('existingName')).toBeTruthy();
     });
   });
 
-  describe('The age field', () => {
-    let ageControl: AbstractControl;
+  describe('The status field', () => {
+    let statusControl: AbstractControl;
 
     beforeEach(() => {
-      ageControl = addTodoComponent.addTodoForm.controls.age;
+      statusControl = addTodoComponent.addTodoForm.controls.status;
     });
 
-    it('should not allow empty ages', () => {
-      ageControl.setValue('');
-      expect(ageControl.valid).toBeFalsy();
+    it('should not allow empty statuss', () => {
+      statusControl.setValue('');
+      expect(statusControl.valid).toBeFalsy();
     });
 
-    it('should be fine with "27"', () => {
-      ageControl.setValue('27');
-      expect(ageControl.valid).toBeTruthy();
+    it('should allow true status', () => {
+      statusControl.setValue('true');
+      expect(statusControl.valid).toBeTruthy();
     });
 
-    it('should fail on ages that are too low', () => {
-      ageControl.setValue('14');
-      expect(ageControl.valid).toBeFalsy();
-      expect(ageControl.hasError('min')).toBeTruthy();
+    it('should allow false status', () => {
+      statusControl.setValue('false');
+      expect(statusControl.valid).toBeTruthy();
     });
 
-    it('should fail on negative ages', () => {
-      ageControl.setValue('-27');
-      expect(ageControl.valid).toBeFalsy();
-      expect(ageControl.hasError('min')).toBeTruthy();
-    });
+  //   it('should be fine with "27"', () => {
+  //     statusControl.setValue('27');
+  //     expect(statusControl.valid).toBeTruthy();
+  //   });
 
-    // In the real world, you'd want to be pretty careful about
-    // setting upper limits on things like ages.
-    it('should fail on ages that are too high', () => {
-      ageControl.setValue(201);
-      expect(ageControl.valid).toBeFalsy();
-      // I have no idea why I have to use a lower case 'l' here
-      // when it's an upper case 'L' in `Validators.maxLength(2)`.
-      // But I apparently do.
-      expect(ageControl.hasError('max')).toBeTruthy();
-    });
+  //   it('should fail on statuss that are too low', () => {
+  //     statusControl.setValue('14');
+  //     expect(statusControl.valid).toBeFalsy();
+  //     expect(statusControl.hasError('min')).toBeTruthy();
+  //   });
 
-    it('should not allow an age to contain a decimal point', () => {
-      ageControl.setValue(27.5);
-      expect(ageControl.valid).toBeFalsy();
-      expect(ageControl.hasError('pattern')).toBeTruthy();
-    });
-  });
+  //   it('should fail on negative statuss', () => {
+  //     statusControl.setValue('-27');
+  //     expect(statusControl.valid).toBeFalsy();
+  //     expect(statusControl.hasError('min')).toBeTruthy();
+  //   });
 
-  describe('The company field', () => {
-    it('should allow empty values', () => {
-      const companyControl = addTodoForm.controls.company;
-      companyControl.setValue('');
-      expect(companyControl.valid).toBeTruthy();
-    });
-  });
+  //   // In the real world, you'd want to be pretty careful about
+  //   // setting upper limits on things like statuss.
+  //   it('should fail on statuss that are too high', () => {
+  //     statusControl.setValue(201);
+  //     expect(statusControl.valid).toBeFalsy();
+  //     // I have no idea why I have to use a lower case 'l' here
+  //     // when it's an upper case 'L' in `Validators.maxLength(2)`.
+  //     // But I apparently do.
+  //     expect(statusControl.hasError('max')).toBeTruthy();
+  //   });
 
-  describe('The email field', () => {
-    let emailControl: AbstractControl;
+  //   it('should not allow an status to contain a decimal point', () => {
+  //     statusControl.setValue(27.5);
+  //     expect(statusControl.valid).toBeFalsy();
+  //     expect(statusControl.hasError('pattern')).toBeTruthy();
+  //   });
+  // });
+
+  // describe('The company field', () => {
+  //   it('should allow empty values', () => {
+  //     const companyControl = addTodoForm.controls.company;
+  //     companyControl.setValue('');
+  //     expect(companyControl.valid).toBeTruthy();
+  //   });
+  // });
+
+  // describe('The email field', () => {
+  //   let emailControl: AbstractControl;
+
+  //   beforeEach(() => {
+  //     emailControl = addTodoComponent.addTodoForm.controls.email;
+  //   });
+
+  //   it('should not allow empty values', () => {
+  //     emailControl.setValue('');
+  //     expect(emailControl.valid).toBeFalsy();
+  //     expect(emailControl.hasError('required')).toBeTruthy();
+  //   });
+
+  //   it('should accept legal emails', () => {
+  //     emailControl.setValue('conniestewart@ohmnet.com');
+  //     expect(emailControl.valid).toBeTruthy();
+  //   });
+
+  //   it('should fail without @', () => {
+  //     emailControl.setValue('conniestewart');
+  //     expect(emailControl.valid).toBeFalsy();
+  //     expect(emailControl.hasError('email')).toBeTruthy();
+  //   });
+  // });
+
+  describe('The category field', () => {
+    let categoryControl: AbstractControl;
 
     beforeEach(() => {
-      emailControl = addTodoComponent.addTodoForm.controls.email;
+      categoryControl = addTodoForm.controls.category;
     });
 
     it('should not allow empty values', () => {
-      emailControl.setValue('');
-      expect(emailControl.valid).toBeFalsy();
-      expect(emailControl.hasError('required')).toBeTruthy();
+      categoryControl.setValue('');
+      expect(categoryControl.valid).toBeFalsy();
+      expect(categoryControl.hasError('required')).toBeTruthy();
     });
 
-    it('should accept legal emails', () => {
-      emailControl.setValue('conniestewart@ohmnet.com');
-      expect(emailControl.valid).toBeTruthy();
+    it('should allow "software design"', () => {
+      categoryControl.setValue('software design');
+      expect(categoryControl.valid).toBeTruthy();
     });
 
-    it('should fail without @', () => {
-      emailControl.setValue('conniestewart');
-      expect(emailControl.valid).toBeFalsy();
-      expect(emailControl.hasError('email')).toBeTruthy();
-    });
-  });
-
-  describe('The role field', () => {
-    let roleControl: AbstractControl;
-
-    beforeEach(() => {
-      roleControl = addTodoForm.controls.role;
+    it('should allow "groceries"', () => {
+      categoryControl.setValue('groceries');
+      expect(categoryControl.valid).toBeTruthy();
     });
 
-    it('should not allow empty values', () => {
-      roleControl.setValue('');
-      expect(roleControl.valid).toBeFalsy();
-      expect(roleControl.hasError('required')).toBeTruthy();
+    it('should allow "video games"', () => {
+      categoryControl.setValue('video games');
+      expect(categoryControl.valid).toBeTruthy();
     });
 
-    it('should allow "admin"', () => {
-      roleControl.setValue('admin');
-      expect(roleControl.valid).toBeTruthy();
-    });
-
-    it('should allow "editor"', () => {
-      roleControl.setValue('editor');
-      expect(roleControl.valid).toBeTruthy();
-    });
-
-    it('should allow "viewer"', () => {
-      roleControl.setValue('viewer');
-      expect(roleControl.valid).toBeTruthy();
+    it('should allow "homework"', () => {
+      categoryControl.setValue('homework');
+      expect(categoryControl.valid).toBeTruthy();
     });
 
     it('should not allow "Supreme Overlord"', () => {
-      roleControl.setValue('Supreme Overlord');
-      expect(roleControl.valid).toBeFalsy();
+      categoryControl.setValue('Supreme Overlord');
+      expect(categoryControl.valid).toBeFalsy();
     });
   });
 
-  describe('getErrorMessage()', () => {
-    it('should return the correct error message', () => {
-      // The type statement is needed to ensure that `controlName` isn't just any
-      // random string, but rather one of the keys of the `addTodoValidationMessages`
-      // map in the component.
-      let controlName: keyof typeof addTodoComponent.addTodoValidationMessages = 'name';
-      addTodoComponent.addTodoForm.get(controlName).setErrors({'required': true});
-      expect(addTodoComponent.getErrorMessage(controlName)).toEqual('Name is required');
+  // describe('getErrorMessstatus()', () => {
+  //   it('should return the correct error messstatus', () => {
+  //     // The type statement is needed to ensure that `controlName` isn't just any
+  //     // random string, but rather one of the keys of the `addTodoValidationMessstatuss`
+  //     // map in the component.
+  //     let controlName: keyof typeof addTodoComponent.addTodoValidationMessstatuss = 'body';
+  //     addTodoComponent.addTodoForm.get(controlName).setErrors({'required': true});
+  //     expect(addTodoComponent.getErrorMessstatus(controlName)).toEqual('Name is required');
 
-      // We don't need the type statement here because we're not using the
-      // same (previously typed) variable. We could use a `let` and the type statement
-      // if we wanted to create a new variable, though.
-      controlName = 'email';
-      addTodoComponent.addTodoForm.get(controlName).setErrors({'required': true});
-      expect(addTodoComponent.getErrorMessage(controlName)).toEqual('Email is required');
+  //     // We don't need the type statement here because we're not using the
+  //     // same (previously typed) variable. We could use a `let` and the type statement
+  //     // if we wanted to create a new variable, though.
+  //     controlName = 'email';
+  //     addTodoComponent.addTodoForm.get(controlName).setErrors({'required': true});
+  //     expect(addTodoComponent.getErrorMessstatus(controlName)).toEqual('Email is required');
 
-      controlName = 'email';
-      addTodoComponent.addTodoForm.get(controlName).setErrors({'email': true});
-      expect(addTodoComponent.getErrorMessage(controlName)).toEqual('Email must be formatted properly');
-    });
+  //     controlName = 'email';
+  //     addTodoComponent.addTodoForm.get(controlName).setErrors({'email': true});
+  //     expect(addTodoComponent.getErrorMessstatus(controlName)).toEqual('Email must be formatted properly');
+  //   });
 
-    it('should return "Unknown error" if no error message is found', () => {
-      // The type statement is needed to ensure that `controlName` isn't just any
-      // random string, but rather one of the keys of the `addTodoValidationMessages`
-      // map in the component.
-      const controlName: keyof typeof addTodoComponent.addTodoValidationMessages = 'name';
-      addTodoComponent.addTodoForm.get(controlName).setErrors({'unknown': true});
-      expect(addTodoComponent.getErrorMessage(controlName)).toEqual('Unknown error');
-    });
-  })
+  //   it('should return "Unknown error" if no error messstatus is found', () => {
+  //     // The type statement is needed to ensure that `controlName` isn't just any
+  //     // random string, but rather one of the keys of the `addTodoValidationMessstatuss`
+  //     // map in the component.
+  //     const controlName: keyof typeof addTodoComponent.addTodoValidationMessstatuss = 'body';
+  //     addTodoComponent.addTodoForm.get(controlName).setErrors({'unknown': true});
+  //     expect(addTodoComponent.getErrorMessstatus(controlName)).toEqual('Unknown error');
+  //   });
+   })
 });
 
 describe('AddTodoComponent#submitForm()', () => {
@@ -282,7 +297,7 @@ describe('AddTodoComponent#submitForm()', () => {
         MatInputModule,
         BrowserAnimationsModule,
         RouterTestingModule.withRoutes([
-            { path: 'todos/1', component: TodoProfileComponent }
+            { path: 'todos/1', component: AddTodoComponent }
         ]),
         HttpClientTestingModule,
         AddTodoComponent
@@ -310,11 +325,10 @@ describe('AddTodoComponent#submitForm()', () => {
     // We don't actually have to do this, but it does mean that when we
     // check that `submitForm()` is called with the right arguments below,
     // we have some reason to believe that that wasn't passing "by accident".
-    component.addTodoForm.controls.name.setValue('Chris Smith');
-    component.addTodoForm.controls.age.setValue(27);
-    component.addTodoForm.controls.company.setValue('Ohmnet');
-    component.addTodoForm.controls.email.setValue('this@that.com');
-    component.addTodoForm.controls.role.setValue('admin');
+    component.addTodoForm.controls.owner.setValue('Chris Smith');
+    component.addTodoForm.controls.status.setValue(true);
+    component.addTodoForm.controls.body.setValue('a very cool and interesting task');
+    component.addTodoForm.controls.category.setValue('homework');
   });
 
   // The `fakeAsync()` wrapper is necessary because the `submitForm()` method
@@ -344,7 +358,7 @@ describe('AddTodoComponent#submitForm()', () => {
       // Check that `.addTodo()` was called with the form's values which we set
       // up above.
       expect(addTodoSpy).toHaveBeenCalledWith(component.addTodoForm.value);
-      // Wait for the router to navigate to the new page. This is necessary since
+      // Wait for the router to navigate to the new pstatus. This is necessary since
       // navigation is an asynchronous operation.
       tick();
       // Now we can check that the router actually navigated to the right place.
@@ -356,14 +370,14 @@ describe('AddTodoComponent#submitForm()', () => {
   }));
 
   // This doesn't need `fakeAsync()`, `tick()`, or `flush() because the
-  // error case doesn't navigate to another page. It just displays an error
-  // message in the snackbar. So, we don't need to worry about the asynchronous
+  // error case doesn't navigate to another pstatus. It just displays an error
+  // messstatus in the snackbar. So, we don't need to worry about the asynchronous
   // nature of navigation.
   it('should call addTodo() and handle error response', () => {
     // Save the original path so we can check that it doesn't change.
     const path = location.path();
     // A canned error response to be returned by the spy.
-    const errorResponse = { status: 500, message: 'Server error' };
+    const errorResponse = { status: 500, messstatus: 'Server error' };
     // "Spy" on the `.addTodo()` method in the todo service. Here we basically
     // intercept any calls to that method and return the error response
     // defined above.

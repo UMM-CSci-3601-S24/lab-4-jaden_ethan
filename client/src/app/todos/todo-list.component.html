@@ -86,9 +86,16 @@
               <mat-nav-list class="todo-nav-list">
                 <h3 mat-subheader>Todos</h3>
                 <a mat-list-item *ngFor="let todo of filteredTodos" (click)="openPopup(todo)" (keyup)="openPopup(todo)" tabindex=0 class="todo-list-item">
-                  <span matListItemLine class="todo-list-id"> ID: {{todo._id}} </span>
-                  <span matListItemLine class="todo-list-owner"> Owner: {{todo.owner}} </span>
-                  <span matListItemLine class="todo-list-status"> Status: {{todo.status ? 'Complete' : 'Incomplete'}} </span>
+                  <div class="flex-container">
+                    <div class="todo-details">
+                      <span matListItemLine class="todo-list-id"> ID: {{todo._id}} </span>
+                      <span matListItemLine class="todo-list-owner"> Owner: {{todo.owner}} </span>
+                      <span matListItemLine class="todo-list-body"> Body: {{todo.body}} </span>
+                    </div>
+                    <div class="todo-status">
+                      <span matListItemLine class="todo-list-status"> <span [ngStyle]="{'color': todo.status ? '#3CFF33' : '#FF0000'}">{{todo.status ? 'Complete' : 'Incomplete'}}</span> </span>
+                    </div>
+                  </div>
                 </a>
               </mat-nav-list>
             </mat-card-content>
@@ -104,7 +111,7 @@
             <p>ID: {{ selectedTodo?._id }}</p>
             <p>Owner: {{ selectedTodo?.owner }}</p>
             <p>Description: {{ selectedTodo?.body }}</p>
-            <p>Status: {{ selectedTodo?.status ? 'Complete' : 'Incomplete' }}</p>
+            <p>Status: <span [ngStyle]="{'color': selectedTodo?.status ? '#3CFF33' : '#FF0000'}">{{ selectedTodo?.status ? 'Complete' : 'Incomplete' }}</span></p>
             <p>Category: {{ selectedTodo?.category }}</p>
           </div>
         </div>

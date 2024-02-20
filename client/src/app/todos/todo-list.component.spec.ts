@@ -81,21 +81,21 @@ describe('Todo list', () => {
     expect(todoList.serverFilteredTodos.length).toBe(3);
   });
 
-  it('contains a todo named \'Chris\'', () => {
-    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.name === 'Chris')).toBe(true);
+  it('contains a todo owner \'Chris\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Chris')).toBe(true);
   });
 
-  it('contain a todo named \'Jamie\'', () => {
-    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.name === 'Jamie')).toBe(true);
+  it('contain a todo owner \'Jamie\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Jamie')).toBe(true);
   });
 
-  it('doesn\'t contain a todo named \'Santa\'', () => {
-    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.name === 'Santa')).toBe(false);
+  it('doesn\'t contain a todo owner \'Santa\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Santa')).toBe(false);
   });
 
-  it('has two todos that are 37 years old', () => {
-    expect(todoList.serverFilteredTodos.filter((todo: Todo) => todo.age === 37).length).toBe(2);
-  });
+  // it('has two todos that are 37 years old', () => {
+  //   expect(todoList.serverFilteredTodos.filter((todo: Todo) => todo.age === 37).length).toBe(2);
+  // });
 });
 
 /*
