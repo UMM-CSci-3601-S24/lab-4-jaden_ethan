@@ -65,6 +65,24 @@ describe('AddTodoComponent', () => {
     expect(addTodoForm.valid).toBeFalsy();
   });
 
+  describe('The owner field', () => {
+    let ownerControl: AbstractControl;
+
+    beforeEach(() => {
+      ownerControl = addTodoComponent.addTodoForm.controls.owner;
+    });
+
+    it('should not allow empty owners', () => {
+      ownerControl.setValue('');
+      expect(ownerControl.valid).toBeFalsy();
+    });
+
+    it('should be fine with "big dog"', () => {
+      ownerControl.setValue('big dog');
+      expect(ownerControl.valid).toBeTruthy();
+    });
+  });
+
   describe('The body field', () => {
     let bodyControl: AbstractControl;
 

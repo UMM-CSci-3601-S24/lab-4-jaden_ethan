@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Todo } from './todo';
 import { map } from 'rxjs/operators';
-import { Company } from '../company-list/company';
 
 /**
  * Service that provides the interface for getting information

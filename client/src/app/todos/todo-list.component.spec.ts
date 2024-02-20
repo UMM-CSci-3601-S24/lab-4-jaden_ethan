@@ -77,8 +77,18 @@ describe('Todo list', () => {
     });
   }));
 
+  
+
   it('contains all the todos', () => {
     expect(todoList.serverFilteredTodos.length).toBe(3);
+  });
+
+  it('contains a todo id \'chris_id\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo._id === 'chris_id')).toBe(true);
+  });
+
+  it('doesnt contain a todo id \'chris_id real\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo._id === 'chris_id real')).toBe(false);
   });
 
   it('contains a todo owner \'Chris\'', () => {
@@ -93,10 +103,42 @@ describe('Todo list', () => {
     expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Santa')).toBe(false);
   });
 
+  it('contain a todo category \'homework\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.category === 'homework')).toBe(true);
+  });
+
+  it('contain a todo category \'software design\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.category === 'software design')).toBe(true);
+  });
+
+  it('contain a todo category \'groceries\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.category === 'groceries')).toBe(true);
+  });
+
+  it('doesn\'t contain a todo category \'eating dirt\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.category === 'eating dirt')).toBe(false);
+  });
+
+
+  it('should open the popup and set the selected todo', () => {
+    const todo: Todo = {
+      _id: 'chris_id',
+      owner: 'Chris',
+      status: false,
+      body: 'UMM is cool',
+      category: 'software design',
+    };
+
+    todoList.openPopup(todo);
+
+    expect(todoList.selectedTodo).toBe(todo);
+    expect(todoList.popupOpen).toBeTrue();
+  });
   // it('has two todos that are 37 years old', () => {
   //   expect(todoList.serverFilteredTodos.filter((todo: Todo) => todo.age === 37).length).toBe(2);
   // });
 });
+
 
 /*
  * This test is a little odd, but illustrates how we can use stubs
@@ -159,3 +201,4 @@ describe('Misbehaving Todo List', () => {
       console.log(todoList.errMsg);
   });
 });
+
