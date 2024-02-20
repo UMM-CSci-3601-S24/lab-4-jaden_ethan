@@ -4,9 +4,6 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +37,8 @@ public class TodoController implements Controller {
   static final String CATEGORY_KEY = "category";
   static final String OWNER_KEY = "owner";
   static final String STATUS_KEY = "status";
+
+  static final String CAT_REGEX = "^(groceries|homework|software design|video games)$";
 
 
   private final JacksonMongoCollection<Todo> todoCollection;
@@ -210,8 +209,7 @@ public class TodoController implements Controller {
   //     // the todo names and IDs for each todo in each company.
   //     .aggregate(
   //       List.of(
-  //         // Project the fields we want to use in the next step, i.e., the _id, name, and company fields
-  //         new Document("$project", new Document("_id", 1).append("owner", 1).append("status", 1).append("body", 1).append("category", 1)),
+  //         // Project the fields we want to use in the next step, i.e., the _id, name, and company fiel
   //         // Group the todos by company, and count the number of todos in each company
   //         new Document("$group", new Document("_id", "$company")
   //           // Count the number of todos in each company
@@ -259,8 +257,8 @@ public class TodoController implements Controller {
     Todo newTodo = ctx.bodyValidator(Todo.class)
       .check(tdo -> tdo.body != null && tdo.body.length() > 0, "Todo must have a non-empty body")
       .check(tdo -> tdo.owner != null && tdo.owner.length() > 0, "Todo must have a non-empty owner")
-      .check(tdo -> tdo.status == true || tdo.status == false, "Todo must have a non-empty status")
-      .check(tdo -> tdo.category.matches("^(groceries|homework|software design|video games)$"), "Todo must have a legal user role")
+      .check(tdo -> tdo.status, "Todo must have a non-empty status")
+      .check(tdo -> tdo.category.matches(CAT_REGEX), "Todo must have a legal user role")
       .get();
 
     // Insert the new todo into the database

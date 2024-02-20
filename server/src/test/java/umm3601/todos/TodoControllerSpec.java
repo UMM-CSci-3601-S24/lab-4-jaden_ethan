@@ -3,16 +3,12 @@ package umm3601.todos;
 import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,14 +23,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
@@ -50,9 +43,6 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
 import io.javalin.validation.ValidationException;
-import io.javalin.validation.Validator;
-import umm3601.todos.Todo;
-import umm3601.todos.TodoController;
 
 /**
  * Tests the logic of the TodoController
@@ -433,8 +423,8 @@ class TodoControllerSpec {
 
   @Test
   void getTodoWithExistentId() throws IOException {
-    String _id = frysId.toHexString();
-    when(ctx.pathParam("id")).thenReturn(_id);
+    String id = frysId.toHexString();
+    when(ctx.pathParam("id")).thenReturn(id);
 
     todoController.getTodo(ctx);
 
@@ -457,8 +447,8 @@ class TodoControllerSpec {
 
   @Test
   void getTodoWithNonexistentId() throws IOException {
-    String _id = "588935f5c668650dc77df581";
-    when(ctx.pathParam("id")).thenReturn(_id);
+    String id = "588935f5c668650dc77df581";
+    when(ctx.pathParam("id")).thenReturn(id);
 
     Throwable exception = assertThrows(NotFoundResponse.class, () -> {
       todoController.getTodo(ctx);
