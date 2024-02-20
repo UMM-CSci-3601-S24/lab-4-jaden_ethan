@@ -41,7 +41,6 @@ public class TodoController implements Controller {
   static final String OWNER_KEY = "owner";
   static final String STATUS_KEY = "status";
 
-  public static final String EMAIL_REGEX = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
   private final JacksonMongoCollection<Todo> todoCollection;
 
@@ -129,13 +128,13 @@ public class TodoController implements Controller {
       Pattern pattern = Pattern.compile(Pattern.quote(ctx.queryParam(OWNER_KEY)), Pattern.CASE_INSENSITIVE);
       filters.add(regex(OWNER_KEY, pattern));
     }
-    if (ctx.queryParamMap().containsKey(BODY_KEY)) {
-      Pattern pattern = Pattern.compile(Pattern.quote(ctx.queryParam(BODY_KEY)), Pattern.CASE_INSENSITIVE);
-      filters.add(regex(BODY_KEY, pattern));
-    }
     if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
       Pattern pattern = Pattern.compile(Pattern.quote(ctx.queryParam(STATUS_KEY)), Pattern.CASE_INSENSITIVE);
       filters.add(regex(STATUS_KEY, pattern));
+    }
+    if (ctx.queryParamMap().containsKey(BODY_KEY)) {
+      Pattern pattern = Pattern.compile(Pattern.quote(ctx.queryParam(BODY_KEY)), Pattern.CASE_INSENSITIVE);
+      filters.add(regex(BODY_KEY, pattern));
     }
     if (ctx.queryParamMap().containsKey(CATEGORY_KEY)) {
       Pattern pattern = Pattern.compile(Pattern.quote(ctx.queryParam(CATEGORY_KEY)), Pattern.CASE_INSENSITIVE);
@@ -187,53 +186,53 @@ public class TodoController implements Controller {
    *   (in either `asc` or `desc` order) or by the number of todos in the
    *   company (`count`, also in either `asc` or `desc` order).
    */
-  public void getTodosGroupedByCompany(Context ctx) {
-    // We'll support sorting the results either by company name (in either `asc` or `desc` order)
-    // or by the number of todos in the company (`count`, also in either `asc` or `desc` order).
-    String sortBy = Objects.requireNonNullElse(ctx.queryParam("sortBy"), "_id");
-    if (sortBy.equals("company")) {
-      sortBy = "_id";
-    }
-    String sortOrder = Objects.requireNonNullElse(ctx.queryParam("sortOrder"), "asc");
-    Bson sortingOrder = sortOrder.equals("desc") ?  Sorts.descending(sortBy) : Sorts.ascending(sortBy);
+  // public void getTodosGroupedByCompany(Context ctx) {
+  //   // We'll support sorting the results either by company name (in either `asc` or `desc` order)
+  //   // or by the number of todos in the company (`count`, also in either `asc` or `desc` order).
+  //   String sortBy = Objects.requireNonNullElse(ctx.queryParam("sortBy"), "_id");
+  //   if (sortBy.equals("company")) {
+  //     sortBy = "_id";
+  //   }
+  //   String sortOrder = Objects.requireNonNullElse(ctx.queryParam("sortOrder"), "asc");
+  //   Bson sortingOrder = sortOrder.equals("desc") ?  Sorts.descending(sortBy) : Sorts.ascending(sortBy);
 
-    // The `TodoByCompany` class is a simple class that has fields for the company
-    // name, the number of todos in that company, and a list of todo names and IDs
-    // (using the `TodoIdName` class to store the todo names and IDs).
-    // We're going to use the aggregation pipeline to group todos by company, and
-    // then count the number of todos in each company. We'll also collect the todo
-    // names and IDs for each todo in each company. We'll then convert the results
-    // of the aggregation pipeline to `TodoByCompany` objects.
+  //   // The `TodoByCompany` class is a simple class that has fields for the company
+  //   // name, the number of todos in that company, and a list of todo names and IDs
+  //   // (using the `TodoIdName` class to store the todo names and IDs).
+  //   // We're going to use the aggregation pipeline to group todos by company, and
+  //   // then count the number of todos in each company. We'll also collect the todo
+  //   // names and IDs for each todo in each company. We'll then convert the results
+  //   // of the aggregation pipeline to `TodoByCompany` objects.
 
-    ArrayList<TodoByStatus> matchingTodos = todoCollection
-      // The following aggregation pipeline groups todos by company, and
-      // then counts the number of todos in each company. It also collects
-      // the todo names and IDs for each todo in each company.
-      .aggregate(
-        List.of(
-          // Project the fields we want to use in the next step, i.e., the _id, name, and company fields
-          new Document("$project", new Document("_id", 1).append("name", 1).append("company", 1)),
-          // Group the todos by company, and count the number of todos in each company
-          new Document("$group", new Document("_id", "$company")
-            // Count the number of todos in each company
-            .append("count", new Document("$sum", 1))
-            // Collect the todo names and IDs for each todo in each company
-            .append("todos", new Document("$push", new Document("_id", "$_id").append("name", "$name")))),
-          // Sort the results. Use the `sortby` query param (default "company")
-          // as the field to sort by, and the query param `sortorder` (default
-          // "asc") to specify the sort order.
-          new Document("$sort", sortingOrder)
-        ),
-        // Convert the results of the aggregation pipeline to TodoGroupResult objects
-        // (i.e., a list of TodoGroupResult objects). It is necessary to have a Java type
-        // to convert the results to, and the JacksonMongoCollection will do this for us.
-        TodoByStatus.class
-      )
-      .into(new ArrayList<>());
+  //   ArrayList<TodoByStatus> matchingTodos = todoCollection
+  //     // The following aggregation pipeline groups todos by company, and
+  //     // then counts the number of todos in each company. It also collects
+  //     // the todo names and IDs for each todo in each company.
+  //     .aggregate(
+  //       List.of(
+  //         // Project the fields we want to use in the next step, i.e., the _id, name, and company fields
+  //         new Document("$project", new Document("_id", 1).append("owner", 1).append("status", 1).append("body", 1).append("category", 1)),
+  //         // Group the todos by company, and count the number of todos in each company
+  //         new Document("$group", new Document("_id", "$company")
+  //           // Count the number of todos in each company
+  //           .append("count", new Document("$sum", 1))
+  //           // Collect the todo names and IDs for each todo in each company
+  //           .append("todos", new Document("$push", new Document("_id", "$_id").append("name", "$name")))),
+  //         // Sort the results. Use the `sortby` query param (default "company")
+  //         // as the field to sort by, and the query param `sortorder` (default
+  //         // "asc") to specify the sort order.
+  //         new Document("$sort", sortingOrder)
+  //       ),
+  //       // Convert the results of the aggregation pipeline to TodoGroupResult objects
+  //       // (i.e., a list of TodoGroupResult objects). It is necessary to have a Java type
+  //       // to convert the results to, and the JacksonMongoCollection will do this for us.
+  //       TodoByStatus.class
+  //     )
+  //     .into(new ArrayList<>());
 
-    ctx.json(matchingTodos);
-    ctx.status(HttpStatus.OK);
-  }
+  //   ctx.json(matchingTodos);
+  //   ctx.status(HttpStatus.OK);
+  // }
 
   /**
    * Add a new todo using information from the context
@@ -333,16 +332,16 @@ public class TodoController implements Controller {
    *
    * @param str the string to generate a md5 for
    */
-  // public String md5(String str) throws NoSuchAlgorithmException {
-  //   MessageDigest md = MessageDigest.getInstance("MD5");
-  //   byte[] hashInBytes = md.digest(str.toLowerCase().getBytes(StandardCharsets.UTF_8));
+  public String md5(String str) throws NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("MD5");
+    byte[] hashInBytes = md.digest(str.toLowerCase().getBytes(StandardCharsets.UTF_8));
 
-  //   StringBuilder result = new StringBuilder();
-  //   for (byte b : hashInBytes) {
-  //     result.append(String.format("%02x", b));
-  //   }
-  //   return result.toString();
-  // }
+    StringBuilder result = new StringBuilder();
+    for (byte b : hashInBytes) {
+      result.append(String.format("%02x", b));
+    }
+    return result.toString();
+  }
 
   /**
    * Setup routes for the `todo` collection endpoints.
@@ -382,7 +381,7 @@ public class TodoController implements Controller {
     // server.get("/api/todosByCompany", this::getTodosGroupedByCompany);
 
     // Delete the specified todo
-    // server.delete(API_TODO_BY_ID, this::deleteTodo);
+    server.delete(API_TODO_BY_ID, this::deleteTodo);
 
     // Add new todo with the todo info being in the JSON body
     // of the HTTP request

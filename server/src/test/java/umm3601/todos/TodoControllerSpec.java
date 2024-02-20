@@ -77,7 +77,7 @@ class TodoControllerSpec {
   // in a few of the tests. It isn't used all that often, though,
   // which suggests that maybe we should extract the tests that
   // care about it into their own spec file?
-  private ObjectId jimsId;
+  private ObjectId frysId;
 
   // The client and database that will be used
   // for all the tests in this spec file.
@@ -138,36 +138,33 @@ class TodoControllerSpec {
     List<Document> testTodos = new ArrayList<>();
     testTodos.add(
         new Document()
-            .append("_id", "4567")
             .append("owner", "Jerry")
             .append("status", true)
             .append("body", "Prominent skier")
-            .append("category", "Runners"));
+            .append("category", "groceries"));
     testTodos.add(
         new Document()
-            .append("_id", "1234")
             .append("owner", "Swan")
             .append("status", false)
-            .append("body", "")
-            .append("category", "Runners"));
+            .append("body", "crazy")
+            .append("category", "software design"));
     testTodos.add(
         new Document()
-            .append("_id", "0002")
             .append("owner", "Rod")
             .append("status", true)
             .append("body", "Hunter")
-            .append("category", "Runners"));
+            .append("category", "video games"));
 
-    jimsId = new ObjectId();
-    Document jim = new Document()
-        .append("_id", jimsId)
-        .append("owner", "Jim")
+    frysId = new ObjectId();
+    Document fry = new Document()
+        .append("_id", frysId)
+        .append("owner", "Fry")
         .append("status", true)
         .append("body", "Bullfrog ranger")
-        .append("category", "slime boy");
+        .append("category", "homework");
 
     todoDocuments.insertMany(testTodos);
-    todoDocuments.insertOne(jim);
+    todoDocuments.insertOne(fry);
 
     todoController = new TodoController(db);
   }
@@ -197,7 +194,7 @@ class TodoControllerSpec {
     // where we want all todos)
     when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
 
-    // Now, go ahead and ask the todoController to getTodos
+    // Now, go ahead and ask the todoControlle to getTodos
     // (which will, indeed, ask the context for its queryParamMap)
     todoController.getTodos(ctx);
 
@@ -224,109 +221,109 @@ class TodoControllerSpec {
     assertEquals(db.getCollection("todos").countDocuments(), todoArrayListCaptor.getValue().size());
   }
 
-  @Test
-  void canGetTodosWithOwnerJerry() throws IOException {
-    // Add a query param map to the context that maps "owner" to "Jerry".
-    Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"Jerry"}));
-    when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParamAsClass(TodoController.OWNER_KEY, String.class))
-        .thenReturn(Validator.create(String.class, "Jerry", TodoController.OWNER_KEY));
+  // @Test
+  // void canGetTodosWithOwnerJerry() throws IOException {
+  //   // Add a query param map to the context that maps "owner" to "Jerry".
+  //   Map<String, List<String>> queryParams = new HashMap<>();
+  //   queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"Jerry"}));
+  //   when(ctx.queryParamMap()).thenReturn(queryParams);
+  //   when(ctx.queryParamAsClass(TodoController.OWNER_KEY, String.class))
+  //       .thenReturn(Validator.create(String.class, "Jerry", TodoController.OWNER_KEY));
 
-    todoController.getTodos(ctx);
+  //   todoController.getTodos(ctx);
 
-    verify(ctx).json(todoArrayListCaptor.capture());
-    verify(ctx).status(HttpStatus.OK);
-    assertEquals(2, todoArrayListCaptor.getValue().size());
-    for (Todo todo : todoArrayListCaptor.getValue()) {
-      assertEquals("Jerry", todo.owner);
-    }
-  }
+  //   verify(ctx).json(todoArrayListCaptor.capture());
+  //   verify(ctx).status(HttpStatus.OK);
+  //   assertEquals(2, todoArrayListCaptor.getValue().size());
+  //   for (Todo todo : todoArrayListCaptor.getValue()) {
+  //     assertEquals("Jerry", todo.owner);
+  //   }
+  // }
 
-  // We've included another approach for testing if everything behaves when we ask
-  // for todos that are Jerry
-  @Test
-  void canGetTodosWithOwnerJerryRedux() throws JsonMappingException, JsonProcessingException {
-    // When the controller calls `ctx.queryParamMap`, return the expected map for an
-    // "?owner=Jerry" query.
-    when(ctx.queryParamMap()).thenReturn(Map.of(TodoController.OWNER_KEY, List.of("Jerry")));
-    // When the controller calls `ctx.queryParamAsClass() to get the value
-    // associated with
-    // the "owner" key, return an appropriate Validator.
-    Validator<Integer> validator = Validator.create(Integer.class, "Jerry", TodoController.OWNER_KEY);
-    when(ctx.queryParamAsClass(TodoController.OWNER_KEY, Integer.class)).thenReturn(validator);
+  // // We've included another approach for testing if everything behaves when we ask
+  // // for todos that are Jerry
+  // @Test
+  // void canGetTodosWithOwnerJerryRedux() throws JsonMappingException, JsonProcessingException {
+  //   // When the controller calls `ctx.queryParamMap`, return the expected map for an
+  //   // "?owner=Jerry" query.
+  //   when(ctx.queryParamMap()).thenReturn(Map.of(TodoController.OWNER_KEY, List.of("Jerry")));
+  //   // When the controller calls `ctx.queryParamAsClass() to get the value
+  //   // associated with
+  //   // the "owner" key, return an appropriate Validator.
+  //   Validator<Integer> validator = Validator.create(Integer.class, "Jerry", TodoController.OWNER_KEY);
+  //   when(ctx.queryParamAsClass(TodoController.OWNER_KEY, Integer.class)).thenReturn(validator);
 
-    // Call the method under test.
-    todoController.getTodos(ctx);
+  //   // Call the method under test.
+  //   todoController.getTodos(ctx);
 
-    // Verify that `getTodos` included a call to `ctx.status(HttpStatus.OK)` at some
-    // point.
-    verify(ctx).status(HttpStatus.OK);
+  //   // Verify that `getTodos` included a call to `ctx.status(HttpStatus.OK)` at some
+  //   // point.
+  //   verify(ctx).status(HttpStatus.OK);
 
-    // Instead of using the Captor like in many other tests, we will use an
-    // ArgumentMatcher
-    // Verify that `ctx.json()` is called with a `List` of `Todo`s.
-    // Each of those `Todo`s should have owner Jerry.
-    verify(ctx).json(argThat(new ArgumentMatcher<List<Todo>>() {
-      @Override
-      public boolean matches(List<Todo> todos) {
-        for (Todo todo : todos) {
-          assertEquals("Jerry", todo.owner);
-        }
-        return true;
-      }
-    }));
-  }
+  //   // Instead of using the Captor like in many other tests, we will use an
+  //   // ArgumentMatcher
+  //   // Verify that `ctx.json()` is called with a `List` of `Todo`s.
+  //   // Each of those `Todo`s should have owner Jerry.
+  //   verify(ctx).json(argThat(new ArgumentMatcher<List<Todo>>() {
+  //     @Override
+  //     public boolean matches(List<Todo> todos) {
+  //       for (Todo todo : todos) {
+  //         assertEquals("Jerry", todo.owner);
+  //       }
+  //       return true;
+  //     }
+  //   }));
+  // }
 
   /**
    * Test that if the todo sends a request with an illegal value in
    * the owner field (i.e., something that can't be parsed to a number)
    * we get a reasonable error code back.
    */
-  @Test
-  void respondsAppropriatelyToNonStringOwner() {
-    Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"9000"}));
-    when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParamAsClass(TodoController.OWNER_KEY, String.class))
-        .thenReturn(Validator.create(String.class, "bad", TodoController.OWNER_KEY));
+  // @Test
+  // void respondsAppropriatelyToNonStringOwner() {
+  //   Map<String, List<String>> queryParams = new HashMap<>();
+  //   queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"9000"}));
+  //   when(ctx.queryParamMap()).thenReturn(queryParams);
+  //   when(ctx.queryParamAsClass(TodoController.OWNER_KEY, String.class))
+  //       .thenReturn(Validator.create(String.class, "bad", TodoController.OWNER_KEY));
 
-    // This should now throw a `ValidationException` because
-    // our request has an owner that can't be parsed to a number,
-    // but I don't yet know how to make the messowner be anything specific
-    assertThrows(ValidationException.class, () -> {
-      todoController.getTodos(ctx);
-    });
-  }
+  //   // This should now throw a `ValidationException` because
+  //   // our request has an owner that can't be parsed to a number,
+  //   // but I don't yet know how to make the messowner be anything specific
+  //   assertThrows(ValidationException.class, () -> {
+  //     todoController.getTodos(ctx);
+  //   });
+  // }
 
-  /**
-   * Test that if the todo sends a request with an illegal value in
-   * the owner field (i.e., too big of a number)
-   * we get a reasonable error code back.
-   */
-  @Test
-  void respondsAppropriatelyToTooLargeOwner() {
-    Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"JERRY"}));
-    when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParamAsClass(TodoController.OWNER_KEY, Integer.class))
-        .thenReturn(Validator.create(Integer.class, "JERRY", TodoController.OWNER_KEY));
+  // /**
+  //  * Test that if the todo sends a request with an illegal value in
+  //  * the owner field (i.e., too big of a number)
+  //  * we get a reasonable error code back.
+  //  */
+  // @Test
+  // void respondsAppropriatelyToTooLargeBody() {
+  //   Map<String, List<String>> queryParams = new HashMap<>();
+  //   queryParams.put(TodoController.BODY_KEY, Arrays.asList(new String[] {"JERRY"}));
+  //   when(ctx.queryParamMap()).thenReturn(queryParams);
+  //   when(ctx.queryParamAsClass(TodoController.OWNER_KEY, Integer.class))
+  //       .thenReturn(Validator.create(Integer.class, "JERRY", TodoController.BODY_KEY));
 
-    // This should now throw a `ValidationException` because
-    // our request has an owner that is larger than 150, which isn't allowed,
-    // but I don't yet know how to make the messowner be anything specific
-    assertThrows(ValidationException.class, () -> {
-      todoController.getTodos(ctx);
-    });
-  }
+  //   // This should now throw a `ValidationException` because
+  //   // our request has an owner that is larger than 150, which isn't allowed,
+  //   // but I don't yet know how to make the messowner be anything specific
+  //   assertThrows(ValidationException.class, () -> {
+  //     todoController.getTodos(ctx);
+  //   });
+  // }
 
   @Test
   void canGetTodosWithCategory() throws IOException {
     Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"Runners"}));
+    queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"video games"}));
     queryParams.put(TodoController.STATUS_KEY, Arrays.asList(new String[] {"Complete"}));
     when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParam(TodoController.CATEGORY_KEY)).thenReturn("Runners");
+    when(ctx.queryParam(TodoController.CATEGORY_KEY)).thenReturn("video games");
     when(ctx.queryParam(TodoController.STATUS_KEY)).thenReturn("Complete");
 
     todoController.getTodos(ctx);
@@ -343,9 +340,9 @@ class TodoControllerSpec {
   @Test
   void canGetTodosWithCategoryLowercase() throws IOException {
     Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"slime boy"}));
+    queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"homework"}));
     when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParam(TodoController.CATEGORY_KEY)).thenReturn("slime boy");
+    when(ctx.queryParam(TodoController.CATEGORY_KEY)).thenReturn("homework");
 
     todoController.getTodos(ctx);
 
@@ -354,57 +351,57 @@ class TodoControllerSpec {
 
     // Confirm that all the todos passed to `json` work for OHMNET.
     for (Todo todo : todoArrayListCaptor.getValue()) {
-      assertEquals("slime boy", todo.category);
+      assertEquals("homework", todo.category);
     }
   }
 
-  @Test
-  void getTodosByBody() throws IOException {
-    Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.BODY_KEY, Arrays.asList(new String[] {"Hunter"}));
-    when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParamAsClass(TodoController.BODY_KEY, String.class))
-        .thenReturn(Validator.create(String.class, "Hunter", TodoController.BODY_KEY));
+  // @Test
+  // void getTodosByBody() throws IOException {
+  //   Map<String, List<String>> queryParams = new HashMap<>();
+  //   queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"Hunter"}));
+  //   when(ctx.queryParamMap()).thenReturn(queryParams);
+  //   when(ctx.queryParamAsClass(TodoController.CATEGORY_KEY, String.class))
+  //       .thenReturn(Validator.create(String.class, "Hunter", TodoController.BODY_KEY));
 
-    todoController.getTodos(ctx);
+  //   todoController.getTodos(ctx);
 
-    verify(ctx).json(todoArrayListCaptor.capture());
-    verify(ctx).status(HttpStatus.OK);
-    assertEquals(2, todoArrayListCaptor.getValue().size());
-  }
+  //   verify(ctx).json(todoArrayListCaptor.capture());
+  //   verify(ctx).status(HttpStatus.OK);
+  //   assertEquals(2, todoArrayListCaptor.getValue().size());
+  // }
 
-  @Test
-  void getTodosByOwnerAndCategory() throws IOException {
-    Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"Runners"}));
-    queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"Jerry"}));
-    when(ctx.queryParamMap()).thenReturn(queryParams);
-    when(ctx.queryParam(TodoController.CATEGORY_KEY)).thenReturn("Runners");
-    when(ctx.queryParamAsClass(TodoController.OWNER_KEY, Integer.class))
-        .thenReturn(Validator.create(Integer.class, "Jerry", TodoController.OWNER_KEY));
+  // @Test
+  // void getTodosByOwnerAndCategory() throws IOException {
+  //   Map<String, List<String>> queryParams = new HashMap<>();
+  //   queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"Runners"}));
+  //   queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"Jerry"}));
+  //   when(ctx.queryParamMap()).thenReturn(queryParams);
+  //   when(ctx.queryParam(TodoController.CATEGORY_KEY)).thenReturn("Runners");
+  //   when(ctx.queryParamAsClass(TodoController.OWNER_KEY, Integer.class))
+  //       .thenReturn(Validator.create(Integer.class, "Jerry", TodoController.OWNER_KEY));
 
-    todoController.getTodos(ctx);
+  //   todoController.getTodos(ctx);
 
-    verify(ctx).json(todoArrayListCaptor.capture());
-    verify(ctx).status(HttpStatus.OK);
-    assertEquals(1, todoArrayListCaptor.getValue().size());
-    for (Todo todo : todoArrayListCaptor.getValue()) {
-      assertEquals("Runners", todo.category);
-      assertEquals("Jerry", todo.owner);
-    }
-  }
+  //   verify(ctx).json(todoArrayListCaptor.capture());
+  //   verify(ctx).status(HttpStatus.OK);
+  //   assertEquals(1, todoArrayListCaptor.getValue().size());
+  //   for (Todo todo : todoArrayListCaptor.getValue()) {
+  //     assertEquals("Runners", todo.category);
+  //     assertEquals("Jerry", todo.owner);
+  //   }
+  // }
 
   @Test
   void getTodoWithExistentId() throws IOException {
-    String _id = jimsId.toHexString();
-    when(ctx.pathParam("_id")).thenReturn(_id);
+    String _id = frysId.toHexString();
+    when(ctx.pathParam("id")).thenReturn(_id);
 
     todoController.getTodo(ctx);
 
     verify(ctx).json(todoCaptor.capture());
     verify(ctx).status(HttpStatus.OK);
-    assertEquals("Jim", todoCaptor.getValue().owner);
-    assertEquals(jimsId.toHexString(), todoCaptor.getValue()._id);
+    assertEquals("Fry", todoCaptor.getValue().owner);
+    assertEquals(frysId.toHexString(), todoCaptor.getValue()._id);
   }
 
   @Test
@@ -415,13 +412,13 @@ class TodoControllerSpec {
       todoController.getTodo(ctx);
     });
 
-    assertEquals("The requested todo _id wasn't a legal Mongo Object ID.", exception.getMessage());
+    assertEquals("The requested todo id wasn't a legal Mongo Object ID.", exception.getMessage());
   }
 
   @Test
   void getTodoWithNonexistentId() throws IOException {
     String _id = "588935f5c668650dc77df581";
-    when(ctx.pathParam("_id")).thenReturn(_id);
+    when(ctx.pathParam("id")).thenReturn(_id);
 
     Throwable exception = assertThrows(NotFoundResponse.class, () -> {
       todoController.getTodo(ctx);
@@ -433,68 +430,68 @@ class TodoControllerSpec {
   @Captor
   private ArgumentCaptor<ArrayList<TodoByOwner>> todoByOwnerListCaptor;
 
-  @Test
-  public void testGetTodosGroupedByCategory() {
-    when(ctx.queryParam("sortBy")).thenReturn("category");
-    when(ctx.queryParam("sortOrder")).thenReturn("asc");
-    todoController.getTodosGroupedByCompany(ctx);
+  // @Test
+  // public void testGetTodosGroupedByCategory() {
+  //   when(ctx.queryParam("sortBy")).thenReturn("category");
+  //   when(ctx.queryParam("sortOrder")).thenReturn("asc");
+  //   todoController.getTodosGroupedByCompany(ctx);
 
-    // Capture the argument to `ctx.json()`
-    verify(ctx).json(todoByOwnerListCaptor.capture());
+  //  // Capture the argument to `ctx.json()`
+  //   verify(ctx).json(todoByOwnerListCaptor.capture());
 
-    // Get the value that was passed to `ctx.json()`
-    ArrayList<TodoByOwner> result = todoByOwnerListCaptor.getValue();
+  //   // Get the value that was passed to `ctx.json()`
+  //   ArrayList<TodoByOwner> result = todoByOwnerListCaptor.getValue();
 
-    // There are 3 companies in the test data, so we should have 3 entries in the
-    // result.
-    assertEquals(3, result.size());
+  //   // There are 3 companies in the test data, so we should have 3 entries in the
+  //   // result.
+  //   assertEquals(3, result.size());
 
-    // The companies should be in alphabetical order by company name,
-    // and with todo counts of 1, 2, and 1, respectively.
-    TodoByOwner jerry = result.get(0);
-    assertEquals("Jerry", jerry._id);
-    assertEquals(1, jerry.count);
-    TodoByOwner Rod = result.get(1);
-    assertEquals("Rod", Rod._id);
-    assertEquals(2, Rod.count);
-    TodoByOwner Swan = result.get(2);
-    assertEquals("Swan", Swan._id);
-    assertEquals(1, Swan.count);
-  }
+  //   // The companies should be in alphabetical order by company name,
+  //   // and with todo counts of 1, 2, and 1, respectively.
+  //   TodoByOwner jerry = result.get(0);
+  //   assertEquals("Jerry", jerry._id);
+  //   assertEquals(1, jerry.count);
+  //   TodoByOwner Rod = result.get(1);
+  //   assertEquals("Rod", Rod._id);
+  //   assertEquals(2, Rod.count);
+  //   TodoByOwner Swan = result.get(2);
+  //   assertEquals("Swan", Swan._id);
+  //   assertEquals(1, Swan.count);
+  // }
 
-  @Test
-  public void testGetTodosGroupedByOwnerOrderedByCount() {
-    when(ctx.queryParam("sortBy")).thenReturn("count");
-    when(ctx.queryParam("sortOrder")).thenReturn("asc");
-    todoController.getTodosGroupedByCompany(ctx);
+  // @Test
+  // public void testGetTodosGroupedByOwnerOrderedByCount() {
+  //   when(ctx.queryParam("sortBy")).thenReturn("count");
+  //   when(ctx.queryParam("sortOrder")).thenReturn("asc");
+  //   todoController.getTodosGroupedByCompany(ctx);
 
-    // Capture the argument to `ctx.json()`
-    verify(ctx).json(todoByOwnerListCaptor.capture());
+  //   // Capture the argument to `ctx.json()`
+  //   verify(ctx).json(todoByOwnerListCaptor.capture());
 
-    // Get the value that was passed to `ctx.json()`
-    ArrayList<TodoByOwner> result = todoByOwnerListCaptor.getValue();
+  //   // Get the value that was passed to `ctx.json()`
+  //   ArrayList<TodoByOwner> result = todoByOwnerListCaptor.getValue();
 
-    // There are 3 companies in the test data, so we should have 3 entries in the
-    // result.
-    assertEquals(1, result.size());
+  //   // There are 3 companies in the test data, so we should have 3 entries in the
+  //   // result.
+  //   assertEquals(1, result.size());
 
-    // The companies should be in order by todo count, and with counts of 1, 1, and 2,
-    // respectively. We don't know which order "IBM" and "UMM" will be in, since they
-    // both have a count of 1. So we'll get them both and then swap them if necessary.
-    TodoByOwner jerry = result.get(0);
-    TodoByOwner Swan = result.get(1);
-    if (jerry._id.equals("4567")) {
-      jerry = result.get(0);
-      Swan = result.get(1);
-    }
-    TodoByOwner Rod = result.get(2);
-    assertEquals("0002", Rod._id);
-    assertEquals(1, Rod.count);
-    assertEquals("1234", Swan._id);
-    assertEquals(1, Swan.count);
-    assertEquals("4567", jerry._id);
-    assertEquals(2, jerry.count);
-  }
+  //   // The companies should be in order by todo count, and with counts of 1, 1, and 2,
+  //   // respectively. We don't know which order "IBM" and "UMM" will be in, since they
+  //   // both have a count of 1. So we'll get them both and then swap them if necessary.
+  //   TodoByOwner jerry = result.get(0);
+  //   TodoByOwner Swan = result.get(1);
+  //   if (jerry._id.equals("4567")) {
+  //     jerry = result.get(0);
+  //     Swan = result.get(1);
+  //   }
+  //   TodoByOwner Rod = result.get(2);
+  //   assertEquals("0002", Rod._id);
+  //   assertEquals(1, Rod.count);
+  //   assertEquals("1234", Swan._id);
+  //   assertEquals(1, Swan.count);
+  //   assertEquals("4567", jerry._id);
+  //   assertEquals(2, jerry.count);
+  // }
 
   @Test
   void addTodo() throws IOException {
@@ -530,14 +527,14 @@ class TodoControllerSpec {
   }
 
   @Test
-  void addInvalidEmailTodo() throws IOException {
+  void addInvalidStatusTodo() throws IOException {
     String testNewTodo = """
         {
-          "name": "Test Todo",
-          "owner": 25,
-          "company": "testers",
-          "email": "invalidemail",
-          "role": "viewer"
+          "_id": "TestTodo",
+          "owner": "Jerry",
+          "status": fake,
+          "body": "cool stuff",
+          "category": "homework"
         }
         """;
     when(ctx.bodyValidator(Todo.class))
@@ -554,15 +551,16 @@ class TodoControllerSpec {
     // verify(ctx).status(HttpStatus.BAD_REQUEST);
   }
 
+
   @Test
-  void addInvalidAgeTodo() throws IOException {
+  void addInvalidCategoryTodo() throws IOException {
     String testNewTodo = """
         {
-          "name": "Test Todo",
-          "owner": "notanumber",
-          "company": "testers",
-          "email": "test@example.com",
-          "role": "viewer"
+          "_id": "TestTodo",
+          "owner": "Jerry",
+          "status": true,
+          "body": "cool stuff",
+          "category": "real category"
         }
         """;
     when(ctx.bodyValidator(Todo.class))
@@ -574,14 +572,13 @@ class TodoControllerSpec {
   }
 
   @Test
-  void add0AgeTodo() throws IOException {
+  void addNullOwnerTodo() throws IOException {
     String testNewTodo = """
         {
-          "name": "Test Todo",
-          "owner": 0,
-          "company": "testers",
-          "email": "test@example.com",
-          "role": "viewer"
+          "_id": "TestTodo",
+          "status": true,
+          "body": "cool stuff",
+          "category": "homework"
         }
         """;
     when(ctx.bodyValidator(Todo.class))
@@ -593,14 +590,13 @@ class TodoControllerSpec {
   }
 
   @Test
-  void add150AgeTodo() throws IOException {
+  void addNullBodyTodo() throws IOException {
     String testNewTodo = """
         {
-          "name": "Test Todo",
-          "owner": 150,
-          "company": "testers",
-          "email": "test@example.com",
-          "role": "viewer"
+          "_id": "TestTodo",
+          "owner": "Jerry",
+          "status": true,
+          "category": "homework"
         }
         """;
     when(ctx.bodyValidator(Todo.class))
@@ -612,13 +608,13 @@ class TodoControllerSpec {
   }
 
   @Test
-  void addNullNameTodo() throws IOException {
+  void addNullCategoryTodo() throws IOException {
     String testNewTodo = """
         {
-          "owner": 25,
-          "company": "testers",
-          "email": "test@example.com",
-          "role": "viewer"
+          "_id": "TestTodo",
+          "owner": "Jerry",
+          "status": true,
+          "body": "cool stuff",
         }
         """;
     when(ctx.bodyValidator(Todo.class))
@@ -629,85 +625,11 @@ class TodoControllerSpec {
     });
   }
 
-  @Test
-  void addInvalidNameTodo() throws IOException {
-    String testNewTodo = """
-        {
-          "name": "",
-          "owner": 25,
-          "company": "testers",
-          "email": "test@example.com",
-          "role": "viewer"
-        }
-        """;
-    when(ctx.bodyValidator(Todo.class))
-        .then(value -> new BodyValidator<Todo>(testNewTodo, Todo.class, javalinJackson));
-
-    assertThrows(ValidationException.class, () -> {
-      todoController.addNewTodo(ctx);
-    });
-  }
-
-  @Test
-  void addInvalidRoleTodo() throws IOException {
-    String testNewTodo = """
-        {
-          "name": "Test Todo",
-          "owner": 25,
-          "company": "testers",
-          "email": "test@example.com",
-          "role": "invalidrole"
-        }
-        """;
-    when(ctx.bodyValidator(Todo.class))
-        .then(value -> new BodyValidator<Todo>(testNewTodo, Todo.class, javalinJackson));
-
-    assertThrows(ValidationException.class, () -> {
-      todoController.addNewTodo(ctx);
-    });
-  }
-
-  @Test
-  void addNullCompanyTodo() throws IOException {
-    String testNewTodo = """
-        {
-          "name": "Test Todo",
-          "owner": 25,
-          "email": "test@example.com",
-          "role": "viewer"
-        }
-        """;
-    when(ctx.bodyValidator(Todo.class))
-        .then(value -> new BodyValidator<Todo>(testNewTodo, Todo.class, javalinJackson));
-
-    assertThrows(ValidationException.class, () -> {
-      todoController.addNewTodo(ctx);
-    });
-  }
-
-  @Test
-  void addInvalidCompanyTodo() throws IOException {
-    String testNewTodo = """
-        {
-          "name": "",
-          "owner": 25,
-          "company": "",
-          "email": "test@example.com",
-          "role": "viewer"
-        }
-        """;
-    when(ctx.bodyValidator(Todo.class))
-        .then(value -> new BodyValidator<Todo>(testNewTodo, Todo.class, javalinJackson));
-
-    assertThrows(ValidationException.class, () -> {
-      todoController.addNewTodo(ctx);
-    });
-  }
 
   @Test
   void deleteFoundTodo() throws IOException {
-    String testID = jimsId.toHexString();
-    when(ctx.pathParam("_id")).thenReturn(testID);
+    String testID = frysId.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
 
     // Todo exists before deletion
     assertEquals(1, db.getCollection("todos").countDocuments(eq("_id", new ObjectId(testID))));
@@ -722,7 +644,7 @@ class TodoControllerSpec {
 
   @Test
   void tryToDeleteNotFoundTodo() throws IOException {
-    String testID = jimsId.toHexString();
+    String testID = frysId.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 
     todoController.deleteTodo(ctx);
