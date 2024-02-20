@@ -338,6 +338,46 @@ class TodoControllerSpec {
   }
 
   @Test
+  void canGetTodosWithOwner() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put(TodoController.OWNER_KEY, Arrays.asList(new String[] {"Jerry"}));
+    queryParams.put(TodoController.STATUS_KEY, Arrays.asList(new String[] {"Complete"}));
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    when(ctx.queryParam(TodoController.OWNER_KEY)).thenReturn("Jerry");
+    when(ctx.queryParam(TodoController.STATUS_KEY)).thenReturn("Complete");
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    // Confirm that all the todos passed to `json` work for OHMNET.
+    for (Todo todo : todoArrayListCaptor.getValue()) {
+      assertEquals("Jerry", todo.owner);
+    }
+  }
+
+  @Test
+  void canGetTodosWithBody() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put(TodoController.BODY_KEY, Arrays.asList(new String[] {"Prominent skier"}));
+    queryParams.put(TodoController.STATUS_KEY, Arrays.asList(new String[] {"Complete"}));
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    when(ctx.queryParam(TodoController.BODY_KEY)).thenReturn("Prominent skier");
+    when(ctx.queryParam(TodoController.STATUS_KEY)).thenReturn("Complete");
+
+    todoController.getTodos(ctx);
+
+    verify(ctx).json(todoArrayListCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    // Confirm that all the todos passed to `json` work for OHMNET.
+    for (Todo todo : todoArrayListCaptor.getValue()) {
+      assertEquals("Prominent skier", todo.body);
+    }
+  }
+
+  @Test
   void canGetTodosWithCategoryLowercase() throws IOException {
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put(TodoController.CATEGORY_KEY, Arrays.asList(new String[] {"homework"}));
@@ -427,8 +467,8 @@ class TodoControllerSpec {
     assertEquals("The requested todo was not found", exception.getMessage());
   }
 
-  @Captor
-  private ArgumentCaptor<ArrayList<TodoByOwner>> todoByOwnerListCaptor;
+  // @Captor
+  // private ArgumentCaptor<ArrayList<TodoByOwner>> todoByOwnerListCaptor;
 
   // @Test
   // public void testGetTodosGroupedByCategory() {
