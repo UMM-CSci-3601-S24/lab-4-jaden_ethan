@@ -500,10 +500,10 @@ class TodoControllerSpec {
   void addTodo() throws IOException {
     String testNewTodo = """
         {
-          "_id": "Test Todo",
-          "owner": Jerry,
+          "_id": "TestTodo",
+          "owner": "Jerry",
           "status": true,
-          "body": "test@example.com",
+          "body": "cool stuff",
           "category": "homework"
         }
         """;
@@ -518,14 +518,14 @@ class TodoControllerSpec {
 
     // Verify that the todo was added to the database with the correct ID
     Document addedTodo = db.getCollection("todos")
-        .find(eq("_id", new ObjectId(mapCaptor.getValue().get("_id")))).first();
+        .find(eq("_id", new ObjectId(mapCaptor.getValue().get("id")))).first();
 
     // Successfully adding the todo should return the newly generated, non-empty
     // MongoDB ID for that todo.
     assertNotEquals("not this", addedTodo.get("_id"));
     assertEquals("Jerry", addedTodo.get(TodoController.OWNER_KEY));
     assertEquals("homework", addedTodo.get(TodoController.CATEGORY_KEY));
-    assertEquals("test@example.com", addedTodo.get("body"));
+    assertEquals("cool stuff", addedTodo.get("body"));
     assertEquals(true, addedTodo.get(TodoController.STATUS_KEY));
   }
 
