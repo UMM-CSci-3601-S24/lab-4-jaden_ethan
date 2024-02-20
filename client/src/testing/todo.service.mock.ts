@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { AppComponent } from 'src/app/app.component';
-import { Todo, TodoRole } from '../app/todos/todo';
+import { Todo, TodoCategory } from '../app/todos/todo';
 import { TodoService } from '../app/todos/todo.service';
 
 /**
@@ -16,30 +16,24 @@ export class MockTodoService extends TodoService {
   static testTodos: Todo[] = [
     {
       _id: 'chris_id',
-      name: 'Chris',
-      age: 25,
-      company: 'UMM',
-      email: 'chris@this.that',
-      role: 'admin',
-      avatar: 'https://gravatar.com/avatar/8c9616d6cc5de638ea6920fb5d65fc6c?d=identicon'
+      owner: 'Chris',
+      status: false,
+      body: 'UMM is cool',
+      category: 'software design',
     },
     {
       _id: 'pat_id',
-      name: 'Pat',
-      age: 37,
-      company: 'IBM',
-      email: 'pat@something.com',
-      role: 'editor',
-      avatar: 'https://gravatar.com/avatar/b42a11826c3bde672bce7e06ad729d44?d=identicon'
+      owner: 'Pat',
+      status: true,
+      body: 'IBM is not cool',
+      category: 'homework',
     },
     {
       _id: 'jamie_id',
-      name: 'Jamie',
-      age: 37,
-      company: 'Frogs, Inc.',
-      email: 'jamie@frogs.com',
-      role: 'viewer',
-      avatar: 'https://gravatar.com/avatar/d4a6c71dd9470ad4cf58f78c100258bf?d=identicon'
+      owner: 'Jamie',
+      status: false,
+      body: 'Frogs, are cool',
+      category: 'groceries',
     }
   ];
 
@@ -51,7 +45,7 @@ export class MockTodoService extends TodoService {
   // It's OK that the `_filters` argument isn't used here, so we'll disable
   // this warning for just his function.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getTodos(_filters: { role?: TodoRole; age?: number; company?: string }): Observable<Todo[]> {
+  getTodos(_filters: { owner?: string; status?: boolean; category?: TodoCategory; body?: string; }): Observable<Todo[]> {
     // Our goal here isn't to test (and thus rewrite) the service, so we'll
     // keep it simple and just return the test todos regardless of what
     // filters are passed in.
