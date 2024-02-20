@@ -258,8 +258,9 @@ public class TodoController implements Controller {
      * `BadRequestResponse` with an appropriate error message.
      */
     Todo newTodo = ctx.bodyValidator(Todo.class)
-      .check(Tdo -> Tdo.owner != null && Tdo.owner.length() > 0, "Todo must have a non-empty owner")
-      .get();
+    .check(tdo -> tdo.body != null && tdo.body.length() > 0, "Todo must have a non-empty user name")
+    .check(tdo -> tdo.category.matches("^(groceries|homework|software design|video games)$"), "Todo must have a legal user role")
+    .get();
 
     // Insert the new todo into the database
     todoCollection.insertOne(newTodo);
@@ -282,19 +283,19 @@ public class TodoController implements Controller {
    */
 
 
-  // public void deleteTodo(Context ctx) {
-  //   String id = ctx.pathParam("id");
-  //   DeleteResult deleteResult = todoCollection.deleteOne(eq("_id", new ObjectId(id)));
-  //   // We should have deleted 1 or 0 todos, depending on whether `id` is a valid todo ID.
-  //   if (deleteResult.getDeletedCount() != 1) {
-  //     ctx.status(HttpStatus.NOT_FOUND);server/src/main/java/umm3601/todos/TodoByStatus.java
-  //     throw new NotFoundResponse(
-  //       "Was unable to delete ID "
-  //         + id
-  //         + "; perhaps illegal ID or an ID for an item not in the system?");
-  //   }
-  //   ctx.status(HttpStatus.OK);
-  // }
+  public void deleteTodo(Context ctx) {
+    String id = ctx.pathParam("id");
+    DeleteResult deleteResult = todoCollection.deleteOne(eq("_id", new ObjectId(id)));
+    // We should have deleted 1 or 0 todos, depending on whether `id` is a valid todo ID.
+    if (deleteResult.getDeletedCount() != 1) {
+      ctx.status(HttpStatus.NOT_FOUND);
+      throw new NotFoundResponse(
+        "Was unable to delete ID "
+          + id
+          + "; perhaps illegal ID or an ID for an item not in the system?");
+    }
+    ctx.status(HttpStatus.OK);
+  }
 
 
 
@@ -311,17 +312,17 @@ public class TodoController implements Controller {
    * @param email the email to generate an avatar for
    * @return a URI pointing to an avatar image
    */
-  String generateAvatar(String email) {
-    String avatar;
-    try {
-      // generate unique md5 code for identicon
-      avatar = "https://gravatar.com/avatar/" + md5(email) + "?d=identicon";
-    } catch (NoSuchAlgorithmException ignored) {
-      // set to mystery person
-      avatar = "https://gravatar.com/avatar/?d=mp";
-    }
-    return avatar;
-  }
+  // String generateAvatar(String email) {
+  //   String avatar;
+  //   try {
+  //     // generate unique md5 code for identicon
+  //     avatar = "https://gravatar.com/avatar/" + md5(email) + "?d=identicon";
+  //   } catch (NoSuchAlgorithmException ignored) {
+  //     // set to mystery person
+  //     avatar = "https://gravatar.com/avatar/?d=mp";
+  //   }
+  //   return avatar;
+  // }
 
   /**
    * Utility function to generate the md5 hash for a given string
@@ -330,16 +331,16 @@ public class TodoController implements Controller {
    *
    * @param str the string to generate a md5 for
    */
-  public String md5(String str) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    byte[] hashInBytes = md.digest(str.toLowerCase().getBytes(StandardCharsets.UTF_8));
+  // public String md5(String str) throws NoSuchAlgorithmException {
+  //   MessageDigest md = MessageDigest.getInstance("MD5");
+  //   byte[] hashInBytes = md.digest(str.toLowerCase().getBytes(StandardCharsets.UTF_8));
 
-    StringBuilder result = new StringBuilder();
-    for (byte b : hashInBytes) {
-      result.append(String.format("%02x", b));
-    }
-    return result.toString();
-  }
+  //   StringBuilder result = new StringBuilder();
+  //   for (byte b : hashInBytes) {
+  //     result.append(String.format("%02x", b));
+  //   }
+  //   return result.toString();
+  // }
 
   /**
    * Setup routes for the `todo` collection endpoints.
@@ -376,7 +377,7 @@ public class TodoController implements Controller {
     server.get(API_TODOS, this::getTodos);
 
     // Get todos, possibly filtered, grouped by company
-    server.get("/api/todosByCompany", this::getTodosGroupedByCompany);
+    // server.get("/api/todosByCompany", this::getTodosGroupedByCompany);
 
     // Delete the specified todo
     // server.delete(API_TODO_BY_ID, this::deleteTodo);
@@ -386,8 +387,4 @@ public class TodoController implements Controller {
     server.post(API_TODOS, this::addNewTodo);
   }
 
-  public void deleteTodo(Context ctx) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'deleteTodo'");
-  }
 }
